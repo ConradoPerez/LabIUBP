@@ -4,72 +4,63 @@
 Servo servo_2;
 Servo servo_3;
 
-int cuenta_2 = 0;
-int pulsact_2 = 0;
-int pulsant_2 = 0;
+int relay = 13;
 
-int cuenta_3 = 0;
-int pulsact_3 = 0;
-int pulsant_3 = 0;
+SoftwareSerial miBT(10, 11);
 
-int relay=13;
-
-const byte rxPin = 11;
-const byte txPin = 13;
-
-SoftwareSerial miBT(10,11); 
-
-void setup()
-{
-  Serial.begin(9600); // comunicacion de monitor serial a 9600 bps
-  Serial.println("Listo"); // escribe Listo en el monitor
-  miBT.begin(9600); // comunicacion serie entre Arduino y el modulo a 9600 bps
-  pinMode(relay, OUTPUT);
-  servo_2.attach(2, 500, 2500);//comunicación con los servos
-  servo_3.attach(3, 500, 2500);
-  pinMode(4, INPUT);
-  pinMode(5, INPUT);
-  pinMode(8, OUTPUT);
-  pinMode(9, OUTPUT);
+void setup() {
   Serial.begin(9600);
+  Serial.println("Listo");
+  miBT.begin(9600);
+  pinMode(relay, OUTPUT);
+  servo_2.attach(2, 500, 2500);
+  servo_3.attach(3, 500, 2500);
   servo_2.write(0);
   servo_3.write(0);
-
 }
 
-void loop()
-{
-  digitalWrite(relay, HIGH); //encender relé
-  if (miBT.available()) // si hay informacion disponible desde modulo
-  Serial.write(miBT.read()); // lee Bluetooth y envia a monitor serial de Arduino
-  pulsact_2 = digitalRead(4);
-  if ((pulsact_2 == 1) && (pulsant_2 == 0)) {
-    cuenta_2 = cuenta_2 + 1;
+void loop() {
+  if (miBT.available()) {
+    char command = miBT.read();
+    processCommand(command);
   }
-  pulsant_2 = pulsact_2;
+}
 
-  if (cuenta_2 == 1) {
-    servo_2.write(90);
-    //digitalWrite(8,HIGH);
-    delay(2500); 
-    servo_2.write(0);
-    cuenta_2 = 0; 
-    //digitalWrite(8,LOW);
+void processCommand(char command) {
+  switch (command) {
+    case '1':
+      activateServo1(servo_2);
+      break;
+    case '2':
+      activateServo2(servo_3);
+      break;
+    case '3':
+      activateRelay();
+      break;
+    case '4':
+      deactivateRelay();
+    default:
+      break;
   }
-  
-  pulsact_3 = digitalRead(5);
-  if ((pulsact_3 == 1) && (pulsant_3 == 0)) {
-    cuenta_3 = cuenta_3 + 1;
-  }
-  pulsant_3 = pulsact_3;
+}
 
-  if (cuenta_3 == 1) {
-    servo_3.write(90); 
-    //digitalWrite(9,HIGH);
-    delay(2500);
-    servo_3.write(0); 
-    //digitalWrite(9,LOW);
-    cuenta_3 = 0;
-  }
-
+void activateServo1(Servo& servo) {
+  servo.write(90); // Mueve el servo a 90 grados
+  delay(500);
+  servo.write(0); // Vuelve a la posición inicial
+  delay(500);
+  servo.write(90);
+  delay(500);
+  servo.write(0);
+}
+void activateServo2(Servo& servo) {
+  servo.write(90); // Mueve el servo a 90 grados
+  delay(1000);
+  servo.write(0);
+}
+void deactivateRelay(){
+  digitalWrite(relay, LOW);// Apaga el rele
+}
+void activateRelay() {
+  digitalWrite(relay, HIGH); // Enciende el relé
 }
