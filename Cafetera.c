@@ -35,10 +35,8 @@ void processCommand(char command) {
       activateServo2(servo_3);
       break;
     case '3':
-      activateRelay();
+    activateRelay();
       break;
-    case '4':
-      deactivateRelay();
     default:
       break;
   }
@@ -58,9 +56,10 @@ void activateServo2(Servo& servo) {
   delay(1000);
   servo.write(0);
 }
-void deactivateRelay(){
+void activateRelay(){
   digitalWrite(relay, LOW);// Apaga el rele
+  delay(500);
+  digitalWrite(relay,HIGH);
+  delay(500);
 }
-void activateRelay() {
-  digitalWrite(relay, HIGH); // Enciende el relé
-}
+
