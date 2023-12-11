@@ -50,6 +50,10 @@ void activateServo1(Servo& servo) {
   servo.write(90);
   delay(500);
   servo.write(0);
+  delay(500);
+  servo.write(90);
+  delay(500);
+  servo.write(0);
 }
 void activateServo2(Servo& servo) {
   servo.write(90); // Mueve el servo a 90 grados
@@ -62,4 +66,3 @@ void activateRelay(){
   digitalWrite(relay,HIGH);
   delay(500);
 }
-
